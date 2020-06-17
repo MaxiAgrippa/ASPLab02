@@ -4,13 +4,15 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-int **createMatrix(int n, int m);
+int **createMatrix(int row, int column);
 
-int readMatrix(FILE *fp, int **mat, int n, int m);
+void **createAnytypeMatrix(int size, int row, int column);
 
-int printMatrix(int **mat, int n, int m);
+int readMatrix(FILE *filePointer, int **matrix, int row, int column);
 
-int **matrixProduct(int **mat1, int **mat2, int n, int m, int p);
+int printMatrix(int **matrix, int row, int column);
+
+int **matrixProduct(int **mat1rix, int **mat2, int row, int column, int column2);
 
 int main(int argc, char *argv[])
 {
@@ -29,10 +31,12 @@ int main(int argc, char *argv[])
         exit(1);
     }
     fscanf(fp, "%d%d%d", &n, &m, &p);
-    mat1 = createMatrix(n, m);    // create an n X m matrix
+//    mat1 = createMatrix(n, m);    // create an n X m matrix
+    mat1 = (int **) createAnytypeMatrix(sizeof(int), n, m);
     readMatrix(fp, mat1, n, m); // read matrix mat1 from fp
     printMatrix(mat1, n, m);    // print mat1
-    mat2 = createMatrix(m, p);    // create an m X p matrix
+//    mat2 = createMatrix(m, p);    // create an m X p matrix
+    mat2 = (int **) createAnytypeMatrix(sizeof(int), m, p);
     readMatrix(fp, mat2, m, p); // read matrix mat2 from fp
     printMatrix(mat2, m, p);    // print mat2
     matProd = matrixProduct(mat1, mat2, n, m, p); // mat1 X mat2
@@ -45,7 +49,7 @@ int main(int argc, char *argv[])
     exit(0);
 }
 
-// Create a row * column empty matrix
+// Create a row * column empty matrix(int **)
 int **createMatrix(int row, int column)
 {
     // initialize a 2D array(int **) to store 1D array(int *)
@@ -127,4 +131,31 @@ int **matrixProduct(int **matrix1, int **matrix2, int row, int column, int colum
     }
     // return result.
     return result;
+}
+
+// Create a row * column empty matrix(void **)
+void **createAnytypeMatrix(int size, int row, int column)
+{
+    if (!(size > 0))
+    {
+        perror("error with size");
+    }
+    // initialize a 2D array(int **) to store 1D array(int *)
+    void **matrix = malloc(row * sizeof(void *));
+    // Error handle
+    if (matrix == NULL)
+    {
+        perror("matrix malloc Failed at createMatrix");
+    }
+    // initialize each 1D array(int *) in 2D array(int **) to store int
+    for (int i = 0; i < row; i++)
+    {
+        matrix[i] = malloc(column * size);
+        // Error handle
+        if (matrix[i] == NULL)
+        {
+            perror("matrix row malloc Failed at createMatrix");
+        }
+    }
+    return matrix;
 }
